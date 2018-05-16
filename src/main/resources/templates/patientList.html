@@ -10,7 +10,7 @@
 	<br />
 	<div>
 		<table border="1">
-			<form th:action="@{/patienList}" th:object="${patientForm}" method="POST">
+			<form th:action="@{/patientList}" th:object="${patientForm}" method="POST">
 				<tr>
 					<td>Name</td>
 					<td><input type="text" th:field="*{name}" /></td>

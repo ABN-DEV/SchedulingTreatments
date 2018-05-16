@@ -61,4 +61,13 @@ public class PatientControllerTests {
             .andExpect( view().name( "patientList" ) );
     }
 
+    @SuppressWarnings( "javadoc" )
+    @Test
+    public void testPatientListPageAddNewPationPost() throws Exception {
+        
+        mockMvc.perform( post( "/patientList.html" ) )
+        .andExpect( status().isOk() )
+        .andExpect( view().name( "patientList" ) );
+    }
+    
 }
