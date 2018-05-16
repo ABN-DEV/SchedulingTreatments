@@ -2,14 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8" />
-<title th:utext="${message}">Welcome</title>
+<title th:utext="${patientTitle}">_patient_</title>
 <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 </head>
 <body>
-	<h1 th:utext="${message}"> _TITLE_ </h1>
-
-	<a th:href="@{/patientList}">
-		Patient List</a> <br> <br> <a th:href="@{/schedule}">Schedule</a>
+	<h1 th:utext="${patientTitle}">_TITLE_</h1>
+	<br />
+	<div>
+		<table border="1">
+			<form th:action="@{/patienList}" th:object="${patientForm}" method="POST">
+				<tr>
+					<td>Name</td>
+					<td><input type="text" th:field="*{name}" /></td>
+				</tr>
+				<tr>
+					<td>Sex</td>
+					<td><input type="text" th:field="*{sex}" /> <br /></td>
+				</tr>
+				<tr>
+					<td>Birthday</td>
+					<td><input type="text" th:field="*{birthday}" /> <br /></td>
+				</tr>
+			<tr>
+				<td colspan="2" class="textCenter"><input type="submit" value="Create" /></td>
+			</tr>
+			</form>
+		</table>
+	</div>
+	<hr />
+	<br />
+	<div>
+		<table border="1">
+			<tr>
+				<th>Name</th>
+				<th>Sex</th>
+				<th>Birthday</th>
+			</tr>
+			<tr th:each="patient : ${patients}">
+				<td th:utext="${patient.name}">_FULL_NAME_</td>
+				<td th:utext="${patient.sex}">_SEX_</td>
+				<td th:utext="${patient.birthday}">_BIRTHDAY_</td>
+			</tr>
+		</table>
+	</div>
 </body>
 
 </html>

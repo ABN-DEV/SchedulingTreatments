@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import app.web.form.PatientForm;
 import app.web.model.Patient;
 
 /**
@@ -24,8 +25,8 @@ import app.web.model.Patient;
 @Controller
 public class PatientController {
 
-    @Value( "${index.message}" )
-    private String message;
+    @Value( "${patient.title}" )
+    private String patientTitle;
 
     /**
      * Index page.
@@ -36,7 +37,10 @@ public class PatientController {
     @GetMapping( value = {"/patientList"} )
     public String patientList( Model model ) {
 
-//        model.addAttribute( "patients", patientService.getAll() );
+        model.addAttribute( "patientTitle", patientTitle );
+
+        PatientForm patientForm = new PatientForm();
+        model.addAttribute( "patientForm", patientForm );
 
         return "patientList";
     }
