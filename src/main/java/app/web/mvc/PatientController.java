@@ -12,6 +12,8 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import app.web.exception.PatientFormInvalidException;
 import app.web.form.PatientForm;
 import app.web.model.Patient;
+import app.web.repository.IPatientService;
 
 /**
  * MVC web controller for {@link Patient}.
@@ -37,6 +41,10 @@ public class PatientController {
     @Value( "${patient.title}" )
     private String patientTitle;
 
+    @Autowired
+    @Qualifier( "patientService" )
+    IPatientService patientService;
+
     /**
      * Index page.
      * 
@@ -44,12 +52,11 @@ public class PatientController {
      * @return the name of the template.
      */
     @GetMapping( value = {"/patientList"} )
-    public String patientList( Model model ) {
+    public String patientList( Model model, @ModelAttribute( "frmPatient" ) final PatientForm frmPatient ) {
 
         model.addAttribute( "patientTitle", patientTitle );
-
-        PatientForm patientForm = new PatientForm();
-        model.addAttribute( "patientForm", patientForm );
+        model.addAttribute( "frmPatient", frmPatient );
+        model.addAttribute( "patients", patientService.getAll() );
 
         return "patientList";
     }
@@ -73,16 +80,22 @@ public class PatientController {
                 LOG.error( "Add new Patient form has error. Validation failed. {} ", frmPatient );
 
                 // return form data to correct them
-                model.addAttribute( "patientForm", frmPatient );
+                model.addAttribute( "frmPatient", frmPatient );
+                model.addAttribute( "patientTitle", patientTitle );
+
+                throw new PatientFormInvalidException();
 
             } else {
                 // no errors in Patient Web Form - the new Patient can be added
                 LOG.debug( "Patient form is Valid", frmPatient );
 
+                patientService.add( frmPatient );
             }
 
         } catch (Exception e) {
-            LOG.error( "Patient form has error.", e);
+            LOG.error( "Patient form has error.", e );
+            model.addAttribute( "error", Boolean.TRUE );
+            resultUrl = "patientList";
         }
 
         return resultUrl;

@@ -1,48 +1,55 @@
 /**
- * Project ..... TreatmentSchedule<br>
+ * Project ..... ProcedureScheduling<br>
  * <br>
  * Author ...... Andrey.B.Nikitin<br>
  * E-Mail ...... ABN.Java@GMail.com<br>
  * Created ..... 2018-05-15<br>
  * <br>
  */
-package app.web.form;
+package app.web.model;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import app.web.model.Patient;
-
 /**
- * Web form data for {@link Patient}.
+ * Domain object Patient.
  * 
  * @since 2018.05.15
  * @author annik
  */
-public class PatientForm {
+@Entity
+@Table( name = "patient" )
+public class Patient {
 
+    @Id
+    @Column( nullable = false, unique = true )
+    @GeneratedValue
     private Integer gid;
 
-    @NotNull
-    @Size( min = 2, max = 128 )
-    private String fullName;
+    @Column( length = 128, nullable = false )
+    private String name;
 
+    @Column( length = 1, nullable = true )
     private String gender;
 
-    @DateTimeFormat( pattern = "MM/dd/yyyy" )
-    @Past
+    @Column( nullable = true )
+    @DateTimeFormat( pattern = "MM/dd/YYYY" )
     private LocalDate birthday;
 
     /**
      * Default Contructor.
      *
      */
-    public PatientForm() {
+    public Patient() {
 
     }
 
@@ -52,9 +59,9 @@ public class PatientForm {
      * @param name
      *            of the Patient. Mandatory value.
      */
-    public PatientForm( String name ) {
+    public Patient( String name ) {
 
-        this.fullName = name;
+        this.name = name;
     }
 
     public Integer getGid() {
@@ -67,14 +74,14 @@ public class PatientForm {
         this.gid = gid;
     }
 
-    public String getFullName() {
+    public String getName() {
 
-        return fullName;
+        return name;
     }
 
-    public void setFullName( String name ) {
+    public void setName( String name ) {
 
-        this.fullName = name;
+        this.name = name;
     }
 
     public String getGender() {
@@ -105,10 +112,10 @@ public class PatientForm {
     public String toString() {
 
         StringBuilder builder = new StringBuilder();
-        builder.append( "PatientForm [gid=" );
+        builder.append( "Patient [gid=" );
         builder.append( gid );
         builder.append( ", name=" );
-        builder.append( fullName );
+        builder.append( name );
         builder.append( ", sex=" );
         builder.append( gender );
         builder.append( ", birthday=" );

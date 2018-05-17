@@ -3,47 +3,101 @@
 <head>
 <meta charset="UTF-8" />
 <title th:utext="${patientTitle}">_patient_</title>
+
+<link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}">
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" th:href="@{/js/jquery-3.3.1.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" th:href="@{/js/proper.js}"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" th:href="@{/js/bootstrap.js}"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" th:href="@{/js/jquery-ui.theme.css}">
+<link rel="stylesheet" href="/resources/demos/style.css" th:href="@{/js/jquery-ui.css}">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js" th:href="@{/js/external/jquery/jquery.js}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" th:href="@{/js/jquery-ui.js}"></script>
+
+<script>
+$( function() {
+    $( "#birthday" ).datepicker({
+      changeMonth: true,
+      changeYear: true
+    });
+    /* $( "input" ).checkboxradio({
+      icon: false
+    }); */
+  } );
+  </script>
+
 <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 </head>
 <body>
-	<h1 th:utext="${patientTitle}">_TITLE_</h1>
-	<br />
-	<div>
-		<table border="1">
-			<form th:action="@{/patientList}" th:object="${patientForm}" method="POST">
-				<tr>
-					<td>Name</td>
-					<td><input type="text" th:field="*{name}" /></td>
-				</tr>
-				<tr>
-					<td>Sex</td>
-					<td><input type="text" th:field="*{sex}" /> <br /></td>
-				</tr>
-				<tr>
-					<td>Birthday</td>
-					<td><input type="text" th:field="*{birthday}" /> <br /></td>
-				</tr>
-			<tr>
-				<td colspan="2" class="textCenter"><input type="submit" value="Create" /></td>
-			</tr>
+	<div class="contatiner">
+		<h1 th:utext="${patientTitle}">_TITLE_</h1>
+		<br />
+		<div>
+
+			<form th:action="@{/patientList}" th:object="${frmPatient}" method="POST">
+
+
+				<div class="row"
+					th:class="${#fields.hasErrors('fullName')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
+
+					<label for="fullName" class="col-sm-2 control-label label-input-sm">Name*</label>
+					<div class="col-sm-3">
+						<input th:field="*{fullName}" type="text" class="form-control input-sm" id="fullName"
+							placeholder="First Last name">
+					</div>
+					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+				</div>
+
+				<div class="row"
+					th:class="${#fields.hasErrors('gender')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
+					<label for="gender_m" class="col-sm-2 control-label label-input-sm">Gender</label>
+
+					<div class="col-sm-2">
+						<label for="gender_m">Male</label> <input type="radio" name="gender" id="gender_m" value="m"
+							th:checked="*{'m'.equals(gender)} ? 'checked' "> <label for="gender_f">Female</label> <input type="radio"
+							name="gender" id="gender_f" value="f" th:checked="*{'f'.equals(gender)} ? 'checked' ">
+					</div>
+					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></div>
+				</div>
+
+				<div class="row"
+					th:class="${#fields.hasErrors('birthday')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
+					<label for="birthday" class="col-sm-2 control-label label-input-sm">Birthday</label>
+					<div class="col-sm-2">
+						<input th:field="*{birthday}" type="text" class="form-control input-sm" id="birthday" placeholder="MM/DD/YYYY">
+					</div>
+					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('birthday')}" th:errors="*{birthday}"></div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-2 text-center">
+						<input type="submit" value="Create" class="btn btn-primary btn-lg btn-block" />
+					</div>
+				</div>
+
 			</form>
-		</table>
-	</div>
-	<hr />
-	<br />
-	<div>
-		<table border="1">
-			<tr>
-				<th>Name</th>
-				<th>Sex</th>
-				<th>Birthday</th>
-			</tr>
-			<tr th:each="patient : ${patients}">
-				<td th:utext="${patient.name}">_FULL_NAME_</td>
-				<td th:utext="${patient.sex}">_SEX_</td>
-				<td th:utext="${patient.birthday}">_BIRTHDAY_</td>
-			</tr>
-		</table>
+
+		</div>
+		<hr />
+		<br />
+		<div>
+			<table border="1">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>gender</th>
+					<th>Birthday</th>
+				</tr>
+				<tr th:each="patient : ${patients}">
+					<td th:utext="${patient.gid}">_FULL_NAME_</td>
+					<td th:utext="${patient.name}">_FULL_NAME_</td>
+					<td th:utext="${patient.gender}">_gender_</td>
+					<td th:utext="${patient.birthday}">_BIRTHDAY_</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 
