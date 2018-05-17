@@ -46,7 +46,7 @@ $( function() {
 
 	<div class="contatiner" style="padding-top: 80px; padding-left: 20px;">
 
-		<H1 th:utext="${patientTitle}">_TITLE_</H1>
+		<H1>Choose a Patient and Planed Date for treatment first.</H1>
 		<br />
 		<div>
 
@@ -76,7 +76,8 @@ $( function() {
 					th:class="${#fields.hasErrors('planedDate')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
 					<label for="planedDate" class="col-sm-2 control-label label-input-sm">planedDate</label>
 					<div class="col-sm-2">
-						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate" placeholder="MM/DD/YYYY">
+						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate"
+							placeholder="MM/DD/YYYY">
 					</div>
 					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('planedDate')}" th:errors="*{planedDate}"></div>
 				</div>
@@ -85,10 +86,10 @@ $( function() {
 			</form>
 
 		</div>
-		<hr />
 		<br />
 	</div>
 
+	<hr />
 	<!-- FOOTER --> <footer class="container">
 		<p class="float-right">
 			<a href="#">Back to top</a>
