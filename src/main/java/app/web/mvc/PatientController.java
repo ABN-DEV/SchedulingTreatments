@@ -41,6 +41,9 @@ public class PatientController {
     @Value( "${patient.title}" )
     private String patientTitle;
 
+    @Value( "${index.message}" )
+    private String message;
+
     @Autowired
     @Qualifier( "patientService" )
     IPatientService patientService;
@@ -54,7 +57,8 @@ public class PatientController {
     @GetMapping( value = {"/patientList"} )
     public String patientList( Model model, @ModelAttribute( "frmPatient" ) final PatientForm frmPatient ) {
 
-        model.addAttribute( "patientTitle", patientTitle );
+        commonModel( model );
+
         model.addAttribute( "frmPatient", frmPatient );
         model.addAttribute( "patients", patientService.getAll() );
 
@@ -81,7 +85,8 @@ public class PatientController {
 
                 // return form data to correct them
                 model.addAttribute( "frmPatient", frmPatient );
-                model.addAttribute( "patientTitle", patientTitle );
+
+                commonModel( model );
 
                 throw new PatientFormInvalidException();
 
@@ -99,6 +104,12 @@ public class PatientController {
         }
 
         return resultUrl;
+    }
+
+    public void commonModel( Model model ) {
+
+        model.addAttribute( "patientTitle", patientTitle );
+        model.addAttribute( "message", message );
     }
 
 }
