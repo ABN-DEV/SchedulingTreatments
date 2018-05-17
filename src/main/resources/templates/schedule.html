@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" class="gr__bootstrap-4_ru">
+<head>
+<meta charset="UTF-8" />
+<title th:utext="${patientTitle}">_patient_</title>
+
+<link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}">
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" th:href="@{/js/jquery-3.3.1.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" th:href="@{/js/proper.js}"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" th:href="@{/js/bootstrap.js}"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" th:href="@{/js/jquery-ui.theme.css}">
+<link rel="stylesheet" href="/resources/demos/style.css" th:href="@{/js/jquery-ui.css}">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js" th:href="@{/js/external/jquery/jquery.js}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" th:href="@{/js/jquery-ui.js}"></script>
+
+<script>
+$( function() {
+    $( "#birthday" ).datepicker({
+      changeMonth: true,
+      changeYear: true
+    });
+    /* $( "input" ).checkboxradio({
+      icon: false
+    }); */
+  } );
+  </script>
+
+<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+			<h1 class="navbar-brand" th:utext="${message}">_TITLE_</h1>
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/}">Home <span class="sr-only">(current)</span></a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<main role="main" class="yobject-marked">
+
+	<div class="contatiner" style="padding-top: 80px; padding-left: 20px;">
+
+		<H1 th:utext="${patientTitle}">_TITLE_</H1>
+		<br />
+		<div>
+
+			<form th:action="@{/schedule}" th:object="${frmSchedule}" method="POST">
+
+
+				<div class="row"
+					th:class="${#fields.hasErrors('patientGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
+
+					<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
+					<div class="col-sm-3">
+
+						<select th:field="*{patientGid}">
+							<option th:each="patient : ${allPatients}" th:value="${patient.gid}" th:text="${patient.Name + ' [' + patient.birthday+']'}">_PATIENT_NAME_</option>
+						</select>
+
+					</div>
+					<div class="col-sm-1 text-center">
+						<input type="submit" value="Find" class="btn btn-primary btn-lg btn-block" />
+					</div>
+					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('patientGid')}" th:errors="*{patientGid}"></div>
+				</div>
+
+				<div class="row"></div>
+
+			</form>
+
+		</div>
+		<hr />
+		<br />
+	</div>
+
+	<!-- FOOTER --> <footer class="container">
+		<p class="float-right">
+			<a href="#">Back to top</a>
+		</p>
+		<p>
+			© 2017-2018 Company, Inc. · <a href="#">Privacy</a> · <a href="#">Terms</a>
+		</p>
+	</footer> </main>
+
+</body>
+
+</html>
