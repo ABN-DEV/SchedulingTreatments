@@ -8,7 +8,12 @@
  */
 package app.web.form;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import javax.validation.constraints.Future;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * Spring MVC Web form data for Scheduling procedures.
@@ -30,8 +35,17 @@ public class ScheduleForm {
 
     private Status status;
 
+    @DateTimeFormat( pattern = "MM/dd/yyyy HH:mm" )
+    @Future
     private LocalDateTime plannedStartTime;
 
+    /* Planed Date */
+    @DateTimeFormat( pattern = "MM/dd/yyyy" )
+    @Future
+    private LocalDate planedDate;
+
+    @DateTimeFormat( pattern = "MM/dd/yyyy HH:mm" )
+    @Future
     private LocalDateTime estimatedEndTime;
 
     /**
@@ -60,178 +74,96 @@ public class ScheduleForm {
         }
     }
 
-    /**
-     * Getter.
-     * 
-     * @return the gid
-     */
     public Integer getGid() {
 
         return gid;
     }
 
-    /**
-     * Setter.
-     * 
-     * @param gid
-     *            the gid to set
-     */
     public void setGid( Integer gid ) {
 
         this.gid = gid;
     }
 
-    /**
-     * Getter.
-     * 
-     * @return the patientGid
-     */
     public Integer getPatientGid() {
 
         return patientGid;
     }
 
-    /**
-     * Setter.
-     * 
-     * @param patientGid
-     *            the patientGid to set
-     */
     public void setPatientGid( Integer patientGid ) {
 
         this.patientGid = patientGid;
     }
 
-    /**
-     * Getter.
-     * 
-     * @return the description
-     */
-    public String getDescription() {
-
-        return description;
-    }
-
-    /**
-     * Setter.
-     * 
-     * @param description
-     *            the description to set
-     */
-    public void setDescription( String description ) {
-
-        this.description = description;
-    }
-
-    /**
-     * Getter.
-     * 
-     * @return the status
-     */
-    public Status getStatus() {
-
-        return status;
-    }
-
-    /**
-     * Setter.
-     * 
-     * @param status
-     *            the status to set
-     */
-    public void setStatus( Status status ) {
-
-        this.status = status;
-    }
-
-    /**
-     * Getter.
-     * 
-     * @return the plannedStartTime
-     */
-    public LocalDateTime getPlannedStartTime() {
-
-        return plannedStartTime;
-    }
-
-    /**
-     * Setter.
-     * 
-     * @param plannedStartTime
-     *            the plannedStartTime to set
-     */
-    public void setPlannedStartTime( LocalDateTime plannedStartTime ) {
-
-        this.plannedStartTime = plannedStartTime;
-    }
-
-    /**
-     * Getter.
-     * 
-     * @return the estimatedEndTime
-     */
-    public LocalDateTime getEstimatedEndTime() {
-
-        return estimatedEndTime;
-    }
-
-    /**
-     * Setter.
-     * 
-     * @param estimatedEndTime
-     *            the estimatedEndTime to set
-     */
-    public void setEstimatedEndTime( LocalDateTime estimatedEndTime ) {
-
-        this.estimatedEndTime = estimatedEndTime;
-    }
-
-    /**
-     * Getter.
-     * 
-     * @return the doctorGid
-     */
     public Integer getDoctorGid() {
 
         return doctorGid;
     }
 
-    /**
-     * Setter.
-     * 
-     * @param doctorGid
-     *            the doctorGid to set
-     */
     public void setDoctorGid( Integer doctorGid ) {
 
         this.doctorGid = doctorGid;
     }
 
-    /**
-     * Getter.
-     * 
-     * @return the roomGid
-     */
     public Integer getRoomGid() {
 
         return roomGid;
     }
 
-    /**
-     * Setter.
-     * 
-     * @param roomGid
-     *            the roomGid to set
-     */
     public void setRoomGid( Integer roomGid ) {
 
         this.roomGid = roomGid;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    public String getDescription() {
+
+        return description;
+    }
+
+    public void setDescription( String description ) {
+
+        this.description = description;
+    }
+
+    public Status getStatus() {
+
+        return status;
+    }
+
+    public void setStatus( Status status ) {
+
+        this.status = status;
+    }
+
+    public LocalDateTime getPlannedStartTime() {
+
+        return plannedStartTime;
+    }
+
+    public void setPlannedStartTime( LocalDateTime plannedStartTime ) {
+
+        this.plannedStartTime = plannedStartTime;
+    }
+
+    public LocalDate getPlanedDate() {
+
+        return planedDate;
+    }
+
+    public void setPlanedDate( LocalDate plannedDate ) {
+
+        this.planedDate = plannedDate;
+    }
+
+    public LocalDateTime getEstimatedEndTime() {
+
+        return estimatedEndTime;
+    }
+
+    public void setEstimatedEndTime( LocalDateTime estimatedEndTime ) {
+
+        this.estimatedEndTime = estimatedEndTime;
+    }
+
     @Override
     public String toString() {
 
@@ -250,6 +182,8 @@ public class ScheduleForm {
         builder.append( status );
         builder.append( ", plannedStartTime=" );
         builder.append( plannedStartTime );
+        builder.append( ", pd=" );
+        builder.append( planedDate );
         builder.append( ", estimatedEndTime=" );
         builder.append( estimatedEndTime );
         builder.append( "]" );

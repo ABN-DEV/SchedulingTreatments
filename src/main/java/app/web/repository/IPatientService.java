@@ -1,6 +1,7 @@
 package app.web.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -30,5 +31,13 @@ public interface IPatientService {
      * @return All {@link Patient}s.
      */
     Collection<Patient> getAll();
+
+    /**
+     * Find {@link Patient} by Gid.
+     * 
+     * @param integer
+     * @return
+     */
+    Optional<Patient> getByGid( Integer integer );
 
 }

@@ -8,6 +8,9 @@
  */
 package app.web.mvc;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -21,9 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
-import app.web.exception.PatientFormInvalidException;
-import app.web.form.PatientForm;
 import app.web.form.ScheduleForm;
 import app.web.model.Patient;
 import app.web.repository.IPatientService;
@@ -36,9 +38,14 @@ import app.web.repository.IPatientService;
  * @author annik
  */
 @Controller
+@SessionAttributes( "selectedPatient" )
 public class ScheduleController {
 
     private static final Logger LOG = LoggerFactory.getLogger( ScheduleController.class );
+
+    private final String urlSchedule = "schedule";
+
+    private final String urlSchedule2 = "schedule2";
 
     @Value( "${schedule.title}" )
     private String scheduleTitle;
@@ -57,62 +64,101 @@ public class ScheduleController {
      * @return the name of the template.
      */
     @GetMapping( value = {"/schedule"} )
-    public String patientList( Model model,
+    public String schedule( final Model model,
             @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule ) {
+
+        LOG.debug( "Schedule form = {} ", frmSchedule );
 
         commonModel( model );
 
-        model.addAttribute( "frmPatient", frmSchedule );
-        model.addAttribute( "allPatients", patientService.getAll() );
+        model.addAttribute( "frmSchedule", frmSchedule );
 
         return "schedule";
     }
 
-//    /**
-//     * @param model
-//     *            the {@link Model}
-//     * @param frmPatient
-//     * @param bindingResult
-//     * @return
-//     */
-//    @PostMapping( value = {"/patientList"} )
-//    public String addNewPatient( final Model model,
-//            @ModelAttribute( "frmPatient" ) @Valid final PatientForm frmPatient, //
-//            final BindingResult bindingResult ) {
-//
-//        String resultUrl = "redirect:patientList";
-//
-//        try {
-//            if ( bindingResult.hasErrors() ) {
-//                LOG.error( "Add new Patient form has error. Validation failed. {} ", frmPatient );
-//
-//                // return form data to correct them
-//                model.addAttribute( "frmPatient", frmPatient );
-//
-//                commonModel( model );
-//
-//                throw new PatientFormInvalidException();
-//
-//            } else {
-//                // no errors in Patient Web Form - the new Patient can be added
-//                LOG.debug( "Patient form is Valid", frmPatient );
-//
-//                patientService.add( frmPatient );
-//            }
-//
-//        } catch (Exception e) {
-//            LOG.error( "Patient form has error.", e );
-//            model.addAttribute( "error", Boolean.TRUE );
-//            resultUrl = "patientList";
-//        }
-//
-//        return resultUrl;
-//    }
-//
+    /**
+     * @param model
+     * @param frmSchedule
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping( value = {"/schedule"} )
+    public String scheduleFind( final Model model,
+            @ModelAttribute( "frmSchedule" ) @Valid final ScheduleForm frmSchedule,
+            final BindingResult bindingResult ) {
+
+        String url = "redirect:" + urlSchedule2;
+
+        try {
+            commonModel( model );
+
+            if ( bindingResult.hasErrors() ) {
+                LOG.error( "Binding Form Schedule failed." );
+                throw new Exception( "Shcedule binding failed." );
+
+            } else {
+                LOG.debug( "Schedule form = {} ", frmSchedule );
+                model.addAttribute( "frmSchedule", frmSchedule );
+
+                if ( frmSchedule.getPatientGid() != null ) {
+                    LOG.debug( "Patient GID = {}", frmSchedule.getPatientGid() );
+
+                    Optional<Patient> patient = patientService.getByGid( frmSchedule.getPatientGid() );
+
+                    if ( patient.isPresent() ) {
+                        // store selected patient in session
+                        model.addAttribute( "selectedPatient", (Patient) patient.get() );
+                        LOG.debug( "Selected Patient={}", patient.get() );
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            LOG.error( "Schedule failed." );
+            url = urlSchedule; // Previous url
+        }
+
+        return url;
+    }
+
+    /**
+     * @param model
+     * @param frmSchedule
+     * @param request
+     * @param bindingResult
+     * 
+     * @return
+     */
+    @GetMapping( value = {"/schedule2"} )
+    public String scheduleRoom( final Model model,
+            @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule, HttpServletRequest request ) {
+
+        String url = urlSchedule2;
+
+        commonModel( model );
+
+        LOG.debug( "Schedule form = {} ", frmSchedule );
+        model.addAttribute( "frmSchedule", frmSchedule );
+        model.addAttribute( "allPatients", patientService.getAll() );
+
+        // get selected patient which is stored at the previous STEP.
+        Patient patient = (Patient) request.getSession()
+            .getAttribute( "selectedPatient" );
+
+        if ( patient != null ) {
+            LOG.debug( "Patient = {}", patient );
+
+        }
+
+        return url;
+    }
+
     public void commonModel( Model model ) {
 
         model.addAttribute( "scheduleTitle", scheduleTitle );
         model.addAttribute( "message", message );
+        model.addAttribute( "allPatients", patientService.getAll() );
+
     }
 
 }

@@ -49,8 +49,16 @@ $( function() {
 		<H1 th:utext="${patientTitle}">_TITLE_</H1>
 		<br />
 		<div>
+			<div class="row paddingBottom5">
 
-			<form th:action="@{/schedule}" th:object="${frmSchedule}" method="POST">
+				<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
+				<div class="col-sm-3">
+					<span th:value="${patient.name}"></span>
+				</div>
+			</div>
+
+
+			<form th:action="@{/schedule2}" th:object="${frmSchedule}" method="POST">
 
 
 				<div class="row"
@@ -76,7 +84,8 @@ $( function() {
 					th:class="${#fields.hasErrors('planedDate')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
 					<label for="planedDate" class="col-sm-2 control-label label-input-sm">planedDate</label>
 					<div class="col-sm-2">
-						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate" placeholder="MM/DD/YYYY">
+						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate"
+							placeholder="MM/DD/YYYY">
 					</div>
 					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('planedDate')}" th:errors="*{planedDate}"></div>
 				</div>

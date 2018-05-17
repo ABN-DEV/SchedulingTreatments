@@ -9,6 +9,7 @@
 package app.web.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,12 @@ public class PatientService implements IPatientService {
     public Collection<Patient> getAll() {
 
         return (Collection<Patient>) patientRepository.findAll();
+    }
+
+    @Override
+    public Optional<Patient> getByGid( Integer id ) {
+
+        return patientRepository.findById( id );
     }
 
 }

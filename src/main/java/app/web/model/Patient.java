@@ -8,6 +8,7 @@
  */
 package app.web.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
@@ -28,7 +29,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Entity
 @Table( name = "patient" )
-public class Patient {
+public class Patient implements Serializable {
 
     @Id
     @Column( nullable = false, unique = true )
