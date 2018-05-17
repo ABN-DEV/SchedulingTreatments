@@ -51,50 +51,23 @@ $( function() {
 		<div>
 			<div class="row paddingBottom5">
 
-				<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
+				<span class="col-sm-2 control-label label-input-sm">Patient :</span>
 				<div class="col-sm-3">
-					<span th:value="${patient.name}"></span>
+					<span th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span>
+				</div>
+			</div>
+			<!-- PLANED DATE for Treatment -->
+			<div class="row paddingBottom5">
+
+				<span class="col-sm-2 control-label label-input-sm">Planed date :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmScheduleStep1.planedDate}"></span>
 				</div>
 			</div>
 
-
-			<form th:action="@{/schedule2}" th:object="${frmSchedule}" method="POST">
-
-
-				<div class="row"
-					th:class="${#fields.hasErrors('patientGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
-
-					<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
-					<div class="col-sm-3">
-
-						<select name="patientGid" id="patientGid">
-							<option th:each="patient : ${allPatients}" th:value="${patient.gid}"
-								th:text="${patient.Name + ' [' + patient.birthday+']'}">_PATIENT_NAME_</option>
-						</select>
-
-					</div>
-					<div class="col-sm-1 text-center">
-						<input type="submit" value="Find" class="btn btn-primary btn-lg btn-block" />
-					</div>
-					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('patientGid')}" th:errors="*{patientGid}"></div>
-				</div>
-
-
-				<div class="row"
-					th:class="${#fields.hasErrors('planedDate')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
-					<label for="planedDate" class="col-sm-2 control-label label-input-sm">planedDate</label>
-					<div class="col-sm-2">
-						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate"
-							placeholder="MM/DD/YYYY">
-					</div>
-					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('planedDate')}" th:errors="*{planedDate}"></div>
-				</div>
-
-
-			</form>
-
 		</div>
 		<hr />
+
 		<br />
 	</div>
 

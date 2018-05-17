@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import app.web.form.ScheduleForm;
+import app.web.form.ScheduleStep1Form;
 import app.web.model.Patient;
 import app.web.repository.IPatientService;
 
@@ -38,7 +39,7 @@ import app.web.repository.IPatientService;
  * @author annik
  */
 @Controller
-@SessionAttributes( "selectedPatient" )
+@SessionAttributes( {"selectedPatient", "frmScheduleStep1"} )
 public class ScheduleController {
 
     private static final Logger LOG = LoggerFactory.getLogger( ScheduleController.class );
@@ -65,13 +66,13 @@ public class ScheduleController {
      */
     @GetMapping( value = {"/schedule"} )
     public String schedule( final Model model,
-            @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule ) {
+            @ModelAttribute( "frmSchedule1" ) final ScheduleStep1Form frmScheduleStep1 ) {
 
-        LOG.debug( "Schedule form = {} ", frmSchedule );
+        LOG.debug( "Schedule form = {} ", frmScheduleStep1 );
 
         commonModel( model );
 
-        model.addAttribute( "frmSchedule", frmSchedule );
+        model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
 
         return "schedule";
     }
@@ -84,7 +85,7 @@ public class ScheduleController {
      */
     @PostMapping( value = {"/schedule"} )
     public String scheduleFind( final Model model,
-            @ModelAttribute( "frmSchedule" ) @Valid final ScheduleForm frmSchedule,
+            @ModelAttribute( "frmScheduleStep1" ) @Valid final ScheduleStep1Form frmScheduleStep1,
             final BindingResult bindingResult ) {
 
         String url = "redirect:" + urlSchedule2;
@@ -97,13 +98,13 @@ public class ScheduleController {
                 throw new Exception( "Shcedule binding failed." );
 
             } else {
-                LOG.debug( "Schedule form = {} ", frmSchedule );
-                model.addAttribute( "frmSchedule", frmSchedule );
+                LOG.debug( "Schedule Step1 form = {} ", frmScheduleStep1 );
+                model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
 
-                if ( frmSchedule.getPatientGid() != null ) {
-                    LOG.debug( "Patient GID = {}", frmSchedule.getPatientGid() );
+                if ( frmScheduleStep1.getPatientGid() != null ) {
+                    LOG.debug( "Patient GID = {}", frmScheduleStep1.getPatientGid() );
 
-                    Optional<Patient> patient = patientService.getByGid( frmSchedule.getPatientGid() );
+                    Optional<Patient> patient = patientService.getByGid( frmScheduleStep1.getPatientGid() );
 
                     if ( patient.isPresent() ) {
                         // store selected patient in session
@@ -131,14 +132,15 @@ public class ScheduleController {
      */
     @GetMapping( value = {"/schedule2"} )
     public String scheduleRoom( final Model model,
-            @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule, HttpServletRequest request ) {
+            @ModelAttribute( "frmScheduleStep1" ) final ScheduleStep1Form frmScheduleStep1,
+            HttpServletRequest request ) {
 
         String url = urlSchedule2;
 
         commonModel( model );
 
-        LOG.debug( "Schedule form = {} ", frmSchedule );
-        model.addAttribute( "frmSchedule", frmSchedule );
+        LOG.debug( "Schedule form = {} ", frmScheduleStep1 );
+        model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
         model.addAttribute( "allPatients", patientService.getAll() );
 
         // get selected patient which is stored at the previous STEP.
@@ -147,6 +149,7 @@ public class ScheduleController {
 
         if ( patient != null ) {
             LOG.debug( "Patient = {}", patient );
+            model.addAttribute( "selectedPatient", patient );
 
         }
 
