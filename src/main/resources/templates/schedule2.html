@@ -83,7 +83,7 @@ $( function() {
 				<div class="col-sm-6">
 					<input th:field="*{description}" type="text" class="form-control input-sm" id="description" placeholder="Description of treatment.">
 				</div>
-				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('doctorGid')}" th:errors="*{doctorGid}"></div>
+				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
 			</div>
 
 
@@ -99,6 +99,7 @@ $( function() {
 					<label th:text="${'Room '+room.name}" th:for="room[+${room.gid}+]">_LABEL_</label> <input type="radio" name="room"
 						th:id="room[+${room.gid}+]" th:value="${room.gid}" />
 				</div>
+				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('room')}"  th:errors="*{room}"></div>
 			</div>
 
 			<div class="row paddingBottom5" style="padding-left: 20px;">

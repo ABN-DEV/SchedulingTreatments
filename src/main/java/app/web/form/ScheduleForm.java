@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,8 +36,11 @@ public class ScheduleForm implements Serializable {
 
     private Integer roomGid;
 
+    @NotNull
+    @NotEmpty
     private String description;
 
+    @NotNull
     private String room;
 
     private String[] roomTime;

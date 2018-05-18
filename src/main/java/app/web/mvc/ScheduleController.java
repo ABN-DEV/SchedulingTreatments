@@ -132,7 +132,7 @@ public class ScheduleController {
             }
 
         } catch (Exception e) {
-            LOG.error( "Schedule failed." );
+            LOG.error( "Schedule failed.", e );
             url = urlSchedule; // Previous url
         }
 
@@ -152,7 +152,8 @@ public class ScheduleController {
     @GetMapping( value = {"/schedule2"} )
     public String scheduleRoom( final Model model,
             @ModelAttribute( "frmScheduleStep1" ) final ScheduleStep1Form frmScheduleStep1,
-            @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule, HttpServletRequest request ) {
+            @ModelAttribute( "frmScheduleMain" ) final ScheduleForm frmSchedule, 
+            HttpServletRequest request ) {
 
         String url = urlSchedule2;
 
@@ -162,12 +163,6 @@ public class ScheduleController {
         model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
 
         model.addAttribute( "frmScheduleMain", frmSchedule );
-
-        model.addAttribute( "allDoctors", doctorService.getAll() );
-
-        model.addAttribute( "allRooms", roomService.getAll() );
-
-        model.addAttribute( "allTimeSlots", getAllTimeSlots() );
 
         // get selected patient which is stored at the previous STEP.
         Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
@@ -187,25 +182,55 @@ public class ScheduleController {
      * @param model
      * @param frmSchedule
      * @param request
-     * @return
+     * @param bindingResult 
+     * @return 
      */
     @PostMapping( value = {"/schedule2"} )
     public String makeAnApointment( final Model model,
-            @ModelAttribute( "frmSchedule" ) @Valid final ScheduleForm frmSchedule,
-            HttpServletRequest request ) {
+            @ModelAttribute( "frmScheduleMain" ) @Valid final ScheduleForm frmSchedule,
+            final BindingResult bindingResult, 
+            HttpServletRequest request) {
 
+        // next page 
         String url = "redirect:" + urlSchedule3;
 
-        // get selected patient which is stored at the previous STEP.
-        Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
+        try {
 
-        ScheduleStep1Form form1 = (ScheduleStep1Form) request.getSession().getAttribute( "frmScheduleStep1" );
+            if ( bindingResult.hasErrors() ) {
+                LOG.error( "Binding Form Schedule failed." );
+                throw new Exception( "Shcedule binding failed." );
 
-        if ( patient != null ) {
-            LOG.debug( "Patient = {}", patient );
-            model.addAttribute( "selectedPatient", patient );
-            model.addAttribute( "frmScheduleMain", frmSchedule );
+            } else {
+                LOG.debug( "Schedule form = {} ", frmSchedule );
 
+                // get selected patient which is stored at the previous STEP.
+                Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
+
+                ScheduleStep1Form form1 =
+                    (ScheduleStep1Form) request.getSession().getAttribute( "frmScheduleStep1" );
+
+                if ( patient != null && form1!=null) {
+                    LOG.debug( "Patient = {}", patient );
+
+                    frmSchedule.setPatientGid( patient.getGid() );
+                    
+                    // if STATUS is NULL - create new 
+                    if ( frmSchedule.getStatus() == null ) {
+                        frmSchedule.setStatus( ScheduleForm.Status.PLANNED );
+                    }
+
+                    model.addAttribute( "selectedPatient", patient );
+                    model.addAttribute( "frmScheduleMain", frmSchedule );
+                }else {
+                    throw new Exception("Unknown Patient or Invalid form step.");
+                }
+            }
+
+        } catch (Exception e) {
+            LOG.error( "Schedule failed.", e );
+            url = urlSchedule2; // Previous url
+            
+            commonModel( model );
         }
 
         return url;
@@ -234,11 +259,6 @@ public class ScheduleController {
             model.addAttribute( "selectedPatient", patient );
 
             // show all rooms and choose a Doctor
-
-            // if STATUS is NULL - create new 
-            if ( frmSchedule.getStatus() == null ) {
-                frmSchedule.setStatus( ScheduleForm.Status.PLANNED );
-            }
 
         } else {
             // get back to start of scheduling
@@ -275,6 +295,10 @@ public class ScheduleController {
         model.addAttribute( "scheduleTitle", scheduleTitle );
         model.addAttribute( "message", message );
         model.addAttribute( "allPatients", patientService.getAll() );
+        model.addAttribute( "allDoctors", doctorService.getAll() );
+        model.addAttribute( "allRooms", roomService.getAll() );
+        model.addAttribute( "allTimeSlots", getAllTimeSlots() );
+
 
     }
 
