@@ -31,46 +31,102 @@ $( function() {
 <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 </head>
 <body>
-	<header>
-		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<h1 class="navbar-brand" th:utext="${message}">_TITLE_</h1>
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/}">Home <span class="sr-only">(current)</span></a></li>
-				</ul>
-			</div>
-		</nav>
-	</header>
+    <header>
+           <nav th:include="inc/navigation :: navigationFragment" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+            role="navigation" style="margin-bottom: 0"></nav>
+    </header>
+
 
 	<main role="main" class="yobject-marked">
 
-	<div class="contatiner" style="padding-top: 80px; padding-left: 20px;">
+	<div class="contatiner" style="padding-top: 80px;">
 
-		<H1 th:utext="${patientTitle}">_TITLE_</H1>
+		<H1>Choose a Doctor, Room and Time.</H1>
 		<br />
-		<div>
-			<div class="row paddingBottom5">
+		<div class="row paddingBottom5" style="padding-left: 20px;">
 
-				<span class="col-sm-2 control-label label-input-sm">Patient :</span>
-				<div class="col-sm-3">
-					<span th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span>
-				</div>
+			<span class="col-sm-2 control-label label-input-sm">Patient :</span>
+			<div class="col-sm-3">
+				<span th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span>
 			</div>
-			<!-- PLANED DATE for Treatment -->
-			<div class="row paddingBottom5">
-
-				<span class="col-sm-2 control-label label-input-sm">Planed date :</span>
-				<div class="col-sm-3">
-					<span th:text="${frmScheduleStep1.planedDate}"></span>
-				</div>
-			</div>
-
 		</div>
-		<hr />
+		<!-- PLANED DATE for Treatment -->
+		<div class="row paddingBottom5" style="padding-left: 20px;">
 
-		<br />
+			<span class="col-sm-2 control-label label-input-sm">Planed date :</span>
+			<div class="col-sm-3">
+				<span th:text="${frmScheduleStep1.planedDate}"></span>
+			</div>
+		</div>
+
+
+		<hr />
+		<form th:action="@{/schedule2}" th:object="${frmScheduleMain}" method="POST">
+
+			<div class="row" style="padding-left: 20px;"
+				th:class="${#fields.hasErrors('doctorGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
+
+				<label for="doctorGid" class="col-sm-2 control-label label-input-sm">Doctor *</label>
+				<div class="col-sm-3">
+
+					<select name="doctorGid" id="doctorGid">
+						<option th:each="doc : ${allDoctors}" th:value="${doc.gid}" th:text="${doc.name}">_DOC_NAME_</option>
+					</select>
+				</div>
+				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('doctorGid')}" th:errors="*{doctorGid}"></div>
+			</div>
+
+			<div class="row" style="padding-left: 20px;"
+				th:class="${#fields.hasErrors('description')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
+
+				<label for="description" class="col-sm-2 control-label label-input-sm">description *</label>
+				<div class="col-sm-6">
+					<input th:field="*{description}" type="text" class="form-control input-sm" id="description" placeholder="Description of treatment.">
+				</div>
+				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('doctorGid')}" th:errors="*{doctorGid}"></div>
+			</div>
+
+
+			<div class="row paddingBottom5" style="padding-left: 20px;">
+				<div class="col-sm-12 alert alert-primary" role="alert"
+					th:class=" 'col-sm-' + ${allRooms.size() * 2}+' alert alert-primary' ">
+					<H5>ROOMS</H5>
+				</div>
+			</div>
+
+			<div class="row paddingBottom5" style="padding-left: 20px;">
+				<div class="col-sm-2 border" th:each="room : ${allRooms} ">
+					<label th:text="${'Room '+room.name}" th:for="room[+${room.gid}+]">_LABEL_</label> <input type="radio" name="room"
+						th:id="room[+${room.gid}+]" th:value="${room.gid}" />
+				</div>
+			</div>
+
+			<div class="row paddingBottom5" style="padding-left: 20px;">
+
+				<div class="col-sm-2 border" th:each="room : ${allRooms} ">
+					Start time : <select th:name="'roomTime[' + ${room.gid}+']'">
+						<option th:each="slotTime : ${allTimeSlots}" th:value="${slotTime}" th:text="${slotTime}">_SLOT_TIME_</option>
+					</select> <br /> End time : <select th:name="'endRoomTime[' + ${room.gid}+']'">
+						<option th:each="slotTime : ${allTimeSlots}" th:value="${slotTime}" th:text="${slotTime}">_SLOT_TIME_</option>
+					</select>
+				</div>
+
+			</div>
+
+			<br />
+			<div class="row paddingBottom5 text-center">
+				<div class="col-sm-8 text-center" style="padding-left: 20px;">
+					<input type="submit" value="Schedule" class="btn btn-primary btn-lg btn-block" />
+				</div>
+			</div>
+
+
+		</form>
+
 	</div>
 
+	<br />
+	<hr />
 	<!-- FOOTER --> <footer class="container">
 		<p class="float-right">
 			<a href="#">Back to top</a>

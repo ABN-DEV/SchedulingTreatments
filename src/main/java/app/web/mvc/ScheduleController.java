@@ -8,6 +8,11 @@
  */
 package app.web.mvc;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +34,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import app.web.form.ScheduleForm;
 import app.web.form.ScheduleStep1Form;
 import app.web.model.Patient;
+import app.web.repository.IDoctorService;
 import app.web.repository.IPatientService;
+import app.web.repository.IRoomService;
 
 /**
  * MVC web controller for Scheduling. <BR />
@@ -39,7 +46,7 @@ import app.web.repository.IPatientService;
  * @author annik
  */
 @Controller
-@SessionAttributes( {"selectedPatient", "frmScheduleStep1"} )
+@SessionAttributes( {"selectedPatient", "frmScheduleStep1", "frmScheduleMain"} )
 public class ScheduleController {
 
     private static final Logger LOG = LoggerFactory.getLogger( ScheduleController.class );
@@ -47,6 +54,8 @@ public class ScheduleController {
     private final String urlSchedule = "schedule";
 
     private final String urlSchedule2 = "schedule2";
+
+    private final String urlSchedule3 = "schedule3";
 
     @Value( "${schedule.title}" )
     private String scheduleTitle;
@@ -57,6 +66,14 @@ public class ScheduleController {
     @Autowired
     @Qualifier( "patientService" )
     IPatientService patientService;
+
+    @Autowired
+    @Qualifier( "doctorService" )
+    private IDoctorService doctorService;
+
+    @Autowired
+    @Qualifier( "roomService" )
+    private IRoomService roomService;
 
     /**
      * Index page.
@@ -85,7 +102,7 @@ public class ScheduleController {
      */
     @PostMapping( value = {"/schedule"} )
     public String scheduleFind( final Model model,
-            @ModelAttribute( "frmScheduleStep1" ) @Valid final ScheduleStep1Form frmScheduleStep1,
+            @ModelAttribute( "frmSchedule1" ) @Valid final ScheduleStep1Form frmScheduleStep1,
             final BindingResult bindingResult ) {
 
         String url = "redirect:" + urlSchedule2;
@@ -123,17 +140,19 @@ public class ScheduleController {
     }
 
     /**
+     * Show chose the Pationt, planed date. Web form for finishing scheduling.
+     * 
      * @param model
+     * @param frmScheduleStep1
      * @param frmSchedule
      * @param request
-     * @param bindingResult
      * 
      * @return
      */
     @GetMapping( value = {"/schedule2"} )
     public String scheduleRoom( final Model model,
             @ModelAttribute( "frmScheduleStep1" ) final ScheduleStep1Form frmScheduleStep1,
-            HttpServletRequest request ) {
+            @ModelAttribute( "frmSchedule" ) final ScheduleForm frmSchedule, HttpServletRequest request ) {
 
         String url = urlSchedule2;
 
@@ -141,19 +160,114 @@ public class ScheduleController {
 
         LOG.debug( "Schedule form = {} ", frmScheduleStep1 );
         model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
-        model.addAttribute( "allPatients", patientService.getAll() );
+
+        model.addAttribute( "frmScheduleMain", frmSchedule );
+
+        model.addAttribute( "allDoctors", doctorService.getAll() );
+
+        model.addAttribute( "allRooms", roomService.getAll() );
+
+        model.addAttribute( "allTimeSlots", getAllTimeSlots() );
 
         // get selected patient which is stored at the previous STEP.
-        Patient patient = (Patient) request.getSession()
-            .getAttribute( "selectedPatient" );
+        Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
 
         if ( patient != null ) {
             LOG.debug( "Patient = {}", patient );
             model.addAttribute( "selectedPatient", patient );
 
+            // show all rooms and choose a Doctor
+
         }
 
         return url;
+    }
+
+    /**
+     * @param model
+     * @param frmSchedule
+     * @param request
+     * @return
+     */
+    @PostMapping( value = {"/schedule2"} )
+    public String makeAnApointment( final Model model,
+            @ModelAttribute( "frmSchedule" ) @Valid final ScheduleForm frmSchedule,
+            HttpServletRequest request ) {
+
+        String url = "redirect:" + urlSchedule3;
+
+        // get selected patient which is stored at the previous STEP.
+        Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
+
+        ScheduleStep1Form form1 = (ScheduleStep1Form) request.getSession().getAttribute( "frmScheduleStep1" );
+
+        if ( patient != null ) {
+            LOG.debug( "Patient = {}", patient );
+            model.addAttribute( "selectedPatient", patient );
+            model.addAttribute( "frmScheduleMain", frmSchedule );
+
+        }
+
+        return url;
+    }
+
+    /**
+     * Lat page of schedule. Show an apointment.
+     */
+    @GetMapping( value = {"/schedule3"} )
+    public String scheduleFinished( final Model model, HttpServletRequest request ) {
+
+        String url = urlSchedule3;
+
+        commonModel( model );
+
+        // get selected patient which is stored at the previous STEP.
+        Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
+
+        ScheduleForm frmSchedule = (ScheduleForm) request.getSession().getAttribute( "frmScheduleMain" );
+        model.addAttribute( "frmSchedule", frmSchedule );
+
+        ScheduleStep1Form form1 = (ScheduleStep1Form) request.getSession().getAttribute( "frmScheduleStep1" );
+
+        if ( patient != null && form1 != null && frmSchedule != null ) {
+            LOG.debug( "Patient = {}", patient );
+            model.addAttribute( "selectedPatient", patient );
+
+            // show all rooms and choose a Doctor
+
+            // if STATUS is NULL - create new 
+            if ( frmSchedule.getStatus() == null ) {
+                frmSchedule.setStatus( ScheduleForm.Status.PLANNED );
+            }
+
+        } else {
+            // get back to start of scheduling
+            url = "redirect:" + urlSchedule;
+        }
+
+        return url;
+    }
+
+    /**
+     * Create all time slots with period 15 minutes.
+     * 
+     * @return
+     */
+    private Collection<LocalTime> getAllTimeSlots() {
+
+        Integer[] mm = {0, 15, 30, 45};
+        List<Integer> listMinutes = new ArrayList<>( Arrays.asList( mm ) );
+
+        Collection<LocalTime> timeSlots = new ArrayList<>();
+
+        for (int i = 8; i < 23; i++) {
+
+            final int k = i;
+            Arrays.asList( mm ).stream().map( t -> LocalTime.of( k, t.intValue() ) ).forEach(
+                t -> timeSlots.add( t ) );
+        }
+
+        return timeSlots;
     }
 
     public void commonModel( Model model ) {

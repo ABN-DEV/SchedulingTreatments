@@ -31,16 +31,10 @@ $( function() {
 <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 </head>
 <body>
-	<header>
-		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<h1 class="navbar-brand" th:utext="${message}">_TITLE_</h1>
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="navbar-nav mr-auto">
-					<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/}">Home <span class="sr-only">(current)</span></a></li>
-				</ul>
-			</div>
-		</nav>
-	</header>
+    <header>
+           <nav th:include="inc/navigation :: navigationFragment" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+            role="navigation" style="margin-bottom: 0"></nav>
+    </header>
 
 	<main role="main" class="yobject-marked">
 

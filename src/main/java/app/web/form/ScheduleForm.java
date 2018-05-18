@@ -8,6 +8,7 @@
  */
 package app.web.form;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,7 +22,9 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since 2018.05.17
  * @author annik
  */
-public class ScheduleForm {
+public class ScheduleForm implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Integer gid;
 
@@ -33,16 +36,17 @@ public class ScheduleForm {
 
     private String description;
 
+    private String room;
+
+    private String[] roomTime;
+
+    private String[] endRoomTime;
+
     private Status status;
 
     @DateTimeFormat( pattern = "MM/dd/yyyy HH:mm" )
     @Future
     private LocalDateTime plannedStartTime;
-
-    /* Planed Date */
-    @DateTimeFormat( pattern = "MM/dd/yyyy" )
-    @Future
-    private LocalDate planedDate;
 
     @DateTimeFormat( pattern = "MM/dd/yyyy HH:mm" )
     @Future
@@ -144,16 +148,6 @@ public class ScheduleForm {
         this.plannedStartTime = plannedStartTime;
     }
 
-    public LocalDate getPlanedDate() {
-
-        return planedDate;
-    }
-
-    public void setPlanedDate( LocalDate plannedDate ) {
-
-        this.planedDate = plannedDate;
-    }
-
     public LocalDateTime getEstimatedEndTime() {
 
         return estimatedEndTime;
@@ -162,6 +156,36 @@ public class ScheduleForm {
     public void setEstimatedEndTime( LocalDateTime estimatedEndTime ) {
 
         this.estimatedEndTime = estimatedEndTime;
+    }
+
+    public String[] getRoomTime() {
+
+        return roomTime;
+    }
+
+    public void setRoomTime( String[] roomTime ) {
+
+        this.roomTime = roomTime;
+    }
+
+    public String[] getEndRoomTime() {
+
+        return endRoomTime;
+    }
+
+    public void setEndRoomTime( String[] endRoomTime ) {
+
+        this.endRoomTime = endRoomTime;
+    }
+
+    public String getRoom() {
+
+        return room;
+    }
+
+    public void setRoom( String room ) {
+
+        this.room = room;
     }
 
     @Override
@@ -182,8 +206,6 @@ public class ScheduleForm {
         builder.append( status );
         builder.append( ", plannedStartTime=" );
         builder.append( plannedStartTime );
-        builder.append( ", pd=" );
-        builder.append( planedDate );
         builder.append( ", estimatedEndTime=" );
         builder.append( estimatedEndTime );
         builder.append( "]" );

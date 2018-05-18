@@ -36,54 +36,67 @@ $( function() {
             role="navigation" style="margin-bottom: 0"></nav>
     </header>
 
-
 	<main role="main" class="yobject-marked">
 
-	<div class="contatiner" style="padding-top: 80px; padding-left: 20px;">
+	<div class="contatiner" style="padding-top: 80px;">
 
-		<H1>Choose a Patient and Planed Date for treatment first.</H1>
-		<br />
-		<div>
+		<div style="padding-left: 20px;">
 
-			<form th:action="@{/schedule}" th:object="${frmSchedule1}" method="POST">
+			<H1>An apoitment is scheduled.</H1>
+			<br />
+			<div class="row paddingBottom5">
 
-
-				<div class="row"
-					th:class="${#fields.hasErrors('patientGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
-
-					<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
-					<div class="col-sm-3">
-
-						<select name="patientGid" id="patientGid">
-							<option th:each="patient : ${allPatients}" th:value="${patient.gid}"
-								th:text="${patient.Name + ' [' + patient.birthday+']'}">_PATIENT_NAME_</option>
-						</select>
-
-					</div>
-					<div class="col-sm-1 text-center">
-						<input type="submit" value="Find" class="btn btn-primary btn-lg btn-block" />
-					</div>
-					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('patientGid')}" th:errors="*{patientGid}"></div>
+				<span class="col-sm-2 control-label label-input-sm">Patient :</span>
+				<div class="col-sm-3">
+					<span th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span>
 				</div>
+			</div>
 
+			<!-- PLANED DATE for Treatment -->
+			<div class="row paddingBottom5">
 
-				<div class="row"
-					th:class="${#fields.hasErrors('planedDate')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
-					<label for="planedDate" class="col-sm-2 control-label label-input-sm">planedDate</label>
-					<div class="col-sm-2">
-						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate"
-							placeholder="MM/DD/YYYY">
-					</div>
-					<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('planedDate')}" th:errors="*{planedDate}"></div>
+				<span class="col-sm-2 control-label label-input-sm">Planed date :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmScheduleStep1.planedDate}"></span>
 				</div>
+			</div>
 
+			<div class="row paddingBottom5">
+				<span class="col-sm-2 control-label label-input-sm">Description :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmSchedule.description}"></span>
+				</div>
+			</div>
 
-			</form>
-
+			<div class="row paddingBottom5">
+				<span class="col-sm-2 control-label label-input-sm">Room :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmSchedule.room}"></span>
+				</div>
+			</div>
+			<div class="row paddingBottom5">
+				<span class="col-sm-2 control-label label-input-sm">Start time :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmSchedule.roomTime[frmSchedule.room]}"></span>
+				</div>
+			</div>
+			<div class="row paddingBottom5">
+				<span class="col-sm-2 control-label label-input-sm">Estimated end time :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmSchedule.endRoomTime[frmSchedule.room]}"></span>
+				</div>
+			</div>
+			<div class="row paddingBottom5">
+				<span class="col-sm-2 control-label label-input-sm">Status :</span>
+				<div class="col-sm-3">
+					<span th:text="${frmSchedule.status}"></span>
+				</div>
+			</div>
 		</div>
-		<br />
+
 	</div>
 
+	<br />
 	<hr />
 	<!-- FOOTER --> <footer class="container">
 		<p class="float-right">

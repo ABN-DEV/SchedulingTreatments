@@ -1,0 +1,20 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<!-- Navigation-START -->
+	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" th:fragment="navigationFragment">
+		<h1 class="navbar-brand" th:utext="${message}">_TITLE_</h1>
+		<div class="collapse navbar-collapse" id="navbarCollapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/}">Home <span class="sr-only">(current)</span></a></li>
+				<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/schedule}">Schedule </a></li>
+				<li class="nav-item active"><a class="nav-link" href="#" th:href="@{/patientList}">Patients</a></li>
+			</ul>
+		</div>
+	</nav>
+	<!-- Navigation-END -->
+
+</body>
+
+</html>

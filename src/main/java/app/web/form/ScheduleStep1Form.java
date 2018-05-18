@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,9 +28,11 @@ import app.web.model.Patient;
  */
 public class ScheduleStep1Form implements Serializable {
 
+    @NotNull
     private Integer patientGid;
 
     /* Planed Date */
+    @NotNull
     @DateTimeFormat( pattern = "MM/dd/yyyy" )
     @Future
     private LocalDate planedDate;
