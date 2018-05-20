@@ -11,12 +11,15 @@ package app.web.form;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import app.web.model.Patient;
 
 /**
  * Spring MVC Web form data for Scheduling procedures.
@@ -29,8 +32,6 @@ public class ScheduleForm implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer gid;
-
-    private Integer patientGid;
 
     private Integer doctorGid;
 
@@ -57,6 +58,8 @@ public class ScheduleForm implements Serializable {
     @Future
     private LocalDateTime estimatedEndTime;
 
+    private Patient patient;
+
     /**
      * Status of Scheduling procedure.
      * 
@@ -65,22 +68,45 @@ public class ScheduleForm implements Serializable {
      */
     public static enum Status {
 
-        PLANNED( "p" ), // 
-        IN_PROGRESS( "i" ), // 
-        FINISHED( "f" ) //
+        PLANNED( "p", "Planned" ), // 
+        IN_PROGRESS( "i", "In progress" ), // 
+        FINISHED( "f", "Finished" ) //
         ;
 
         private String key;
 
-        private Status( String key ) {
+        private String label;
+
+        private Status( String key, String label ) {
 
             this.key = key;
+            this.label = label;
         }
 
         public String getValue() {
 
             return this.key;
         }
+
+        /**
+         * @return plain text this Status.
+         */
+        public String getLabel() {
+
+            return this.label;
+        }
+
+        public static ScheduleForm.Status keyOf( String key ) {
+
+            ScheduleForm.Status result = null;
+            for (ScheduleForm.Status item : ScheduleForm.Status.values()) {
+                if ( key.equals( item.getValue() ) ) {
+                    result = item;
+                }
+            }
+            return result == null ? PLANNED : result;
+        }
+
     }
 
     public Integer getGid() {
@@ -91,16 +117,6 @@ public class ScheduleForm implements Serializable {
     public void setGid( Integer gid ) {
 
         this.gid = gid;
-    }
-
-    public Integer getPatientGid() {
-
-        return patientGid;
-    }
-
-    public void setPatientGid( Integer patientGid ) {
-
-        this.patientGid = patientGid;
     }
 
     public Integer getDoctorGid() {
@@ -193,14 +209,22 @@ public class ScheduleForm implements Serializable {
         this.room = room;
     }
 
+    public Patient getPatient() {
+
+        return this.patient;
+    }
+
+    public void setPatient( Patient patient ) {
+
+        this.patient = patient;
+    }
+
     @Override
     public String toString() {
 
         StringBuilder builder = new StringBuilder();
         builder.append( "ScheduleForm [gid=" );
         builder.append( gid );
-        builder.append( ", patientGid=" );
-        builder.append( patientGid );
         builder.append( ", doctorGid=" );
         builder.append( doctorGid );
         builder.append( ", roomGid=" );
@@ -215,6 +239,39 @@ public class ScheduleForm implements Serializable {
         builder.append( estimatedEndTime );
         builder.append( "]" );
         return builder.toString();
+    }
+
+    /**
+     * Helper method. Prepare planed and estimated time.
+     * 
+     * @param planedDate
+     */
+    public void prepareTime( LocalDate planedDate ) throws Exception {
+
+        if ( planedDate != null ) {
+
+            int roomIndex = Integer.parseInt( this.room );
+
+            LocalTime startTime = LocalTime.parse( this.roomTime[roomIndex] );
+            LocalTime endTime = null;
+            try {
+                endTime = LocalTime.parse( this.endRoomTime[roomIndex] );
+
+            } catch (Exception e) {
+                // suppose that end time is not chosen
+            }
+
+            LocalDateTime ldt = LocalDateTime.of( planedDate, startTime );
+            this.setPlannedStartTime( ldt );
+
+            if ( endTime != null && !endTime.equals( startTime ) && endTime.isAfter( startTime ) ) {
+
+                ldt = LocalDateTime.of( planedDate, endTime );
+                this.setEstimatedEndTime( ldt );
+            }
+
+        }
+
     }
 
 }

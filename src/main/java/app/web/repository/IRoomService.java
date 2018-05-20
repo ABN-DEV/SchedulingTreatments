@@ -26,4 +26,11 @@ public interface IRoomService {
      */
     void initialise();
 
+    /**
+     * Find {@link Room} by GID.
+     * 
+     * @return
+     */
+    Optional<Room> getByGid( Integer id );
+
 }

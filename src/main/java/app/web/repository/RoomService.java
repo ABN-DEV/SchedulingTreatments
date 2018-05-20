@@ -9,6 +9,7 @@
 package app.web.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,6 +55,12 @@ public class RoomService implements IRoomService {
         if ( !roomRepository.findById( 4 ).isPresent() ) {
             roomRepository.save( new Room( 4, "#4" ) );
         }
+    }
+
+    @Override
+    public Optional<Room> getByGid(Integer id) {
+
+        return roomRepository.findById( id );
     }
 
 }

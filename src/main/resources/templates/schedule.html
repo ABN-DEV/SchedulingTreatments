@@ -51,7 +51,7 @@ $( function() {
 				<div class="row"
 					th:class="${#fields.hasErrors('patientGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
 
-					<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient *</label>
+					<label for="patientGid" class="col-sm-2 control-label label-input-sm">Patient * :</label>
 					<div class="col-sm-3">
 
 						<select name="patientGid" id="patientGid">
@@ -69,7 +69,7 @@ $( function() {
 
 				<div class="row"
 					th:class="${#fields.hasErrors('planedDate')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5'">
-					<label for="planedDate" class="col-sm-2 control-label label-input-sm">planedDate</label>
+					<label for="planedDate" class="col-sm-2 control-label label-input-sm">Planed Date * :</label>
 					<div class="col-sm-2">
 						<input name="planedDate" th:value="*{planedDate}" type="text" class="form-control input-sm" id="planedDate"
 							placeholder="MM/DD/YYYY">

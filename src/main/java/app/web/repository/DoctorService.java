@@ -9,6 +9,7 @@
 package app.web.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,12 @@ public class DoctorService implements IDoctorService {
             doctorRepository.save( new Doctor( 4, "Gerbert Wells" ) );
         }
 
+    }
+
+    @Override
+    public Optional<Doctor> getByGid( int id ) {
+
+        return doctorRepository.findById( id );
     }
 
 }

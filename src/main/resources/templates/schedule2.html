@@ -22,19 +22,21 @@ $( function() {
       changeMonth: true,
       changeYear: true
     });
-    /* $( "input" ).checkboxradio({
-      icon: false
-    }); */
   } );
+
+var changeStatus = function(formId){
+    alert(formId);
+    $('#'+formId).submit();
+}
   </script>
 
 <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
 </head>
 <body>
-    <header>
-           <nav th:include="inc/navigation :: navigationFragment" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
-            role="navigation" style="margin-bottom: 0"></nav>
-    </header>
+	<header>
+		<nav th:include="inc/navigation :: navigationFragment" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+			role="navigation" style="margin-bottom: 0"></nav>
+	</header>
 
 
 	<main role="main" class="yobject-marked">
@@ -47,7 +49,7 @@ $( function() {
 
 			<span class="col-sm-2 control-label label-input-sm">Patient :</span>
 			<div class="col-sm-3">
-				<span th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span>
+				<Strong><span class="" th:text="${selectedPatient.name +' ['+selectedPatient.birthday+']'}"></span></Strong>
 			</div>
 		</div>
 		<!-- PLANED DATE for Treatment -->
@@ -55,13 +57,14 @@ $( function() {
 
 			<span class="col-sm-2 control-label label-input-sm">Planed date :</span>
 			<div class="col-sm-3">
-				<span th:text="${frmScheduleStep1.planedDate}"></span>
+				<strong> <span th:text="${frmScheduleStep1.planedDate}"></span>
+				</strong>
 			</div>
 		</div>
 
 
 		<hr />
-		<form th:action="@{/schedule2}" th:object="${frmScheduleMain}" method="POST">
+		<form id="" th:action="@{/schedule2}" th:object="${frmScheduleMain}" method="POST">
 
 			<div class="row" style="padding-left: 20px;"
 				th:class="${#fields.hasErrors('doctorGid')} ? 'row has-error has-feedback paddingBottom5' : 'row paddingBottom5' ">
@@ -81,7 +84,8 @@ $( function() {
 
 				<label for="description" class="col-sm-2 control-label label-input-sm">description *</label>
 				<div class="col-sm-6">
-					<input th:field="*{description}" type="text" class="form-control input-sm" id="description" placeholder="Description of treatment.">
+					<input th:field="*{description}" type="text" class="form-control input-sm" id="description"
+						placeholder="Description of treatment.">
 				</div>
 				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
 			</div>
@@ -96,33 +100,53 @@ $( function() {
 
 			<div class="row paddingBottom5" style="padding-left: 20px;">
 				<div class="col-sm-2 border" th:each="room : ${allRooms} ">
-					<label th:text="${'Room '+room.name}" th:for="room[+${room.gid}+]">_LABEL_</label> <input type="radio" name="room"
-						th:id="room[+${room.gid}+]" th:value="${room.gid}" />
+					<label th:utext="${'<b>Room '+room.name+'</b>'}" th:for="room[+${room.gid}+]">_LABEL_</label> <input type="radio"
+						name="room" th:id="room[+${room.gid}+]" th:value="${room.gid}" />
 				</div>
-				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('room')}"  th:errors="*{room}"></div>
+				<div class="col-sm-4 bg-warning" th:if="${#fields.hasErrors('room')}" th:errors="*{room}"></div>
 			</div>
 
 			<div class="row paddingBottom5" style="padding-left: 20px;">
-
 				<div class="col-sm-2 border" th:each="room : ${allRooms} ">
-					Start time : <select th:name="'roomTime[' + ${room.gid}+']'">
+					Time : <select th:name="'roomTime[' + ${room.gid}+']'">
 						<option th:each="slotTime : ${allTimeSlots}" th:value="${slotTime}" th:text="${slotTime}">_SLOT_TIME_</option>
-					</select> <br /> End time : <select th:name="'endRoomTime[' + ${room.gid}+']'">
+					</select> : <select th:name="'endRoomTime[' + ${room.gid}+']'">
 						<option th:each="slotTime : ${allTimeSlots}" th:value="${slotTime}" th:text="${slotTime}">_SLOT_TIME_</option>
 					</select>
 				</div>
-
 			</div>
-
-			<br />
 			<div class="row paddingBottom5 text-center">
 				<div class="col-sm-8 text-center" style="padding-left: 20px;">
 					<input type="submit" value="Schedule" class="btn btn-primary btn-lg btn-block" />
 				</div>
 			</div>
-
-
 		</form>
+
+		<div class="row paddingBottom5" style="padding-left: 20px;">
+			<div class="col-sm-2 border" th:each="room : ${allRooms} ">
+				<!-- <span th:text="${studyByDate.size()} +' = '+${room}"></span> -->
+				<Span class="badge badge-info">Planed:</Span>
+				<div th:each="studies : ${studyByDate.get(room.gid)}">
+					<div th:each="time : ${studies}" style="margin-top: 10px;">
+						<hr style="border: 1px 1px 1px 1px; padding: 0px; margin: 0px;" />
+						<form th:id="'formStatus'+${time['value'].gid}" th:action="@{/schedule2.1}" th:object="${frmStatus}" method="POST"
+							action="/">
+							<input type="hidden" name="studyId" th:value="${time['value'].gid}" /> <strong th:text="${time['key']}"></strong>
+							<div th:text="'Patient: '+${time['value'].patient.name}"></div>
+							<div th:text="'Doctor: '+${time['value'].doc.name}"></div>
+							<div th:text="'Desc: '+${time['value'].description}"></div>
+							<div>
+								Status : <select name="status" onChange="javascript: changeStatus( $(this).parents('form').attr('id') )">
+									<option th:each="status : ${allStatuses}" th:value="${status.getValue()}" th:text="${status.getLabel()}"
+										th:selected="${status.name().equalsIgnoreCase(time['value'].status)} ? 'selected' ">_STATUS_</option>
+								</select>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 	</div>
 

@@ -1,6 +1,7 @@
 package app.web.repository;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -24,5 +25,13 @@ public interface IDoctorService {
      * Initializer for Doctors.
      */
     void initialise();
+
+    /**
+     * Find a {@link Doctor} by his Gid.
+     * 
+     * @param parseInt
+     * @return the {@link Doctor}
+     */
+    Optional<Doctor> getByGid( int parseInt );
 
 }

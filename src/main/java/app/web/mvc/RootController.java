@@ -24,9 +24,9 @@ import app.web.model.Patient;
 @Controller
 public class RootController {
 
-    @Value("${index.message}")
+    @Value( "${index.message}" )
     private String message;
-    
+
     /**
      * Index page.
      * 
@@ -40,4 +40,5 @@ public class RootController {
 
         return "index";
     }
+
 }

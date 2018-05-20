@@ -9,6 +9,7 @@
 package app.web.repository;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import app.web.model.Patient;
 
@@ -17,6 +18,7 @@ import app.web.model.Patient;
  * @since 2018.05.17
  * @author annik
  */
+@Repository
 public interface PatientRepository extends CrudRepository<Patient, Integer> {
 
 }

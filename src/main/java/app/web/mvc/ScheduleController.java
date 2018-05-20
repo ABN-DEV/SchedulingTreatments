@@ -12,8 +12,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -31,12 +35,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import app.web.Utils;
 import app.web.form.ScheduleForm;
+import app.web.form.ScheduleForm.Status;
 import app.web.form.ScheduleStep1Form;
+import app.web.form.StatusForm;
 import app.web.model.Patient;
+import app.web.model.Room;
+import app.web.model.Study;
 import app.web.repository.IDoctorService;
 import app.web.repository.IPatientService;
 import app.web.repository.IRoomService;
+import app.web.repository.IStudyService;
 
 /**
  * MVC web controller for Scheduling. <BR />
@@ -63,6 +73,12 @@ public class ScheduleController {
     @Value( "${index.message}" )
     private String message;
 
+    @Value( "${index.time.start}" )
+    private int timeStartSlot;
+
+    @Value( "${index.time.end}" )
+    private int timeEndSlot;
+
     @Autowired
     @Qualifier( "patientService" )
     IPatientService patientService;
@@ -74,6 +90,10 @@ public class ScheduleController {
     @Autowired
     @Qualifier( "roomService" )
     private IRoomService roomService;
+
+    @Autowired
+    @Qualifier( "studyService" )
+    private IStudyService studyService;
 
     /**
      * Index page.
@@ -96,7 +116,7 @@ public class ScheduleController {
 
     /**
      * @param model
-     * @param frmSchedule
+     * @param frmScheduleStep1
      * @param bindingResult
      * @return
      */
@@ -129,6 +149,9 @@ public class ScheduleController {
                         LOG.debug( "Selected Patient={}", patient.get() );
                     }
                 }
+
+                model.addAttribute( "frmScheduleMain", new ScheduleForm() );
+
             }
 
         } catch (Exception e) {
@@ -152,7 +175,7 @@ public class ScheduleController {
     @GetMapping( value = {"/schedule2"} )
     public String scheduleRoom( final Model model,
             @ModelAttribute( "frmScheduleStep1" ) final ScheduleStep1Form frmScheduleStep1,
-            @ModelAttribute( "frmScheduleMain" ) final ScheduleForm frmSchedule, 
+            @ModelAttribute( "frmScheduleMain" ) final ScheduleForm frmSchedule,
             HttpServletRequest request ) {
 
         String url = urlSchedule2;
@@ -162,7 +185,7 @@ public class ScheduleController {
         LOG.debug( "Schedule form = {} ", frmScheduleStep1 );
         model.addAttribute( "frmScheduleStep1", frmScheduleStep1 );
 
-        model.addAttribute( "frmScheduleMain", frmSchedule );
+//        model.addAttribute( "frmScheduleMain", frmSchedule );
 
         // get selected patient which is stored at the previous STEP.
         Patient patient = (Patient) request.getSession().getAttribute( "selectedPatient" );
@@ -172,24 +195,53 @@ public class ScheduleController {
             model.addAttribute( "selectedPatient", patient );
 
             // show all rooms and choose a Doctor
+            Collection<Study> schedulesByDate = studyService.findDate( frmScheduleStep1.getPlanedDate() );
 
+            Map<Integer, Map<String, Study>> studyMap = new HashMap<Integer, Map<String, Study>>();
+
+            schedulesByDate.stream().forEach( study -> {
+
+                Room room = study.getRoom();
+                if ( room != null ) {
+                    Integer roomId = room.getGid();
+
+                    // prepare Map<"HH:MM-HH:MM", Study>
+                    Map<String, Study> studies = studyMap.get( roomId );
+                    if ( Utils.isEmpty( studies ) ) {
+                        studies = new TreeMap<String, Study>();
+                    }
+                    String startTime = String.format( "%02d:%02d",
+                        study.getStartTime().getHour(),
+                        study.getStartTime().getMinute() );
+                    String endTime = "";
+                    if ( study.getEndTime() != null ) {
+                        endTime = String.format( "-%02d:%02d",
+                            study.getEndTime().getHour(),
+                            study.getEndTime().getMinute() );
+                    }
+                    studies.put( startTime + endTime, study );
+
+                    studyMap.put( roomId, studies );
+                }
+            } );
+            model.addAttribute( "studyByDate", studyMap );
         }
 
         return url;
+
     }
 
     /**
      * @param model
      * @param frmSchedule
      * @param request
-     * @param bindingResult 
-     * @return 
+     * @param bindingResult
+     * @return
      */
     @PostMapping( value = {"/schedule2"} )
     public String makeAnApointment( final Model model,
             @ModelAttribute( "frmScheduleMain" ) @Valid final ScheduleForm frmSchedule,
-            final BindingResult bindingResult, 
-            HttpServletRequest request) {
+            final BindingResult bindingResult, HttpServletRequest request ) {
 
         // next page 
         String url = "redirect:" + urlSchedule3;
@@ -209,11 +261,11 @@ public class ScheduleController {
                 ScheduleStep1Form form1 =
                     (ScheduleStep1Form) request.getSession().getAttribute( "frmScheduleStep1" );
 
-                if ( patient != null && form1!=null) {
+                if ( patient != null && form1 != null ) {
                     LOG.debug( "Patient = {}", patient );
 
-                    frmSchedule.setPatientGid( patient.getGid() );
-                    
+                    frmSchedule.setPatient( patient );
+
                     // if STATUS is NULL - create new 
                     if ( frmSchedule.getStatus() == null ) {
                         frmSchedule.setStatus( ScheduleForm.Status.PLANNED );
@@ -221,15 +273,65 @@ public class ScheduleController {
 
                     model.addAttribute( "selectedPatient", patient );
                     model.addAttribute( "frmScheduleMain", frmSchedule );
-                }else {
-                    throw new Exception("Unknown Patient or Invalid form step.");
+
+                    frmSchedule.prepareTime( form1.getPlanedDate() );
+
+                    // persist schedule 
+                    studyService.add( frmSchedule );
+
+                } else {
+                    throw new Exception( "Unknown Patient or Invalid form step." );
                 }
             }
 
         } catch (Exception e) {
             LOG.error( "Schedule failed.", e );
             url = urlSchedule2; // Previous url
-            
+
+            commonModel( model );
+        }
+
+        return url;
+    }
+
+    /**
+     * @param model
+     * @param frmStatus
+     * @param bindingResult
+     * @param request
+     * @return
+     */
+    @PostMapping( value = {"/schedule2.1"} )
+    public String changeStatus( final Model model,
+            @ModelAttribute( "frmStatus" ) @Valid final StatusForm frmStatus,
+            final BindingResult bindingResult, HttpServletRequest request ) {
+
+        // next page 
+        String url = "redirect:" + urlSchedule2;
+
+        try {
+
+            if ( bindingResult.hasErrors() ) {
+                LOG.error( "Binding Form Schedule failed." );
+                throw new Exception( "Shcedule binding failed." );
+
+            } else {
+                LOG.debug( "Schedule form = {} ", frmStatus );
+
+                ScheduleForm.Status status = ScheduleForm.Status.keyOf( frmStatus.getStatus() );
+
+                Integer key = frmStatus.getStudyId();
+
+                studyService.updateStatus( key, status );
+
+            }
+
+        } catch (
+
+        Exception e) {
+            LOG.error( "Schedule failed.", e );
+            url = urlSchedule2; // Previous url
+
             commonModel( model );
         }
 
@@ -268,9 +370,25 @@ public class ScheduleController {
         return url;
     }
 
-    /**
+    public void commonModel( Model model ) {
+
+        model.addAttribute( "scheduleTitle", scheduleTitle );
+        model.addAttribute( "message", message );
+        model.addAttribute( "allPatients", patientService.getAll() );
+        model.addAttribute( "allDoctors", doctorService.getAll() );
+        model.addAttribute( "allRooms", roomService.getAll() );
+        model.addAttribute( "allTimeSlots", getAllTimeSlots() );
+        model.addAttribute( "allStatuses", getAllStatuses() );
+
+    }
+
+    private Status[] getAllStatuses() {
+
+        return ScheduleForm.Status.values();
+    }
+
+    /*
      * Create all time slots with period 15 minutes.
-     * 
      * @return
      */
     private Collection<LocalTime> getAllTimeSlots() {
@@ -280,7 +398,7 @@ public class ScheduleController {
 
         Collection<LocalTime> timeSlots = new ArrayList<>();
 
-        for (int i = 8; i < 23; i++) {
+        for (int i = this.timeStartSlot; i < this.timeEndSlot; i++) {
 
             final int k = i;
             Arrays.asList( mm ).stream().map( t -> LocalTime.of( k, t.intValue() ) ).forEach(
@@ -289,17 +407,4 @@ public class ScheduleController {
 
         return timeSlots;
     }
-
-    public void commonModel( Model model ) {
-
-        model.addAttribute( "scheduleTitle", scheduleTitle );
-        model.addAttribute( "message", message );
-        model.addAttribute( "allPatients", patientService.getAll() );
-        model.addAttribute( "allDoctors", doctorService.getAll() );
-        model.addAttribute( "allRooms", roomService.getAll() );
-        model.addAttribute( "allTimeSlots", getAllTimeSlots() );
-
-
-    }
-
 }

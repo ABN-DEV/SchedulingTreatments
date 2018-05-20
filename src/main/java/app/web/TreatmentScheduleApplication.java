@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan( basePackages = {"app.web"} )
 public class TreatmentScheduleApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger( TreatmentScheduleApplication.class );
@@ -17,8 +19,8 @@ public class TreatmentScheduleApplication {
 //        try {
 //            h2Server.startTcpServer();
 
-            ConfigurableApplicationContext ctx =
-                SpringApplication.run( TreatmentScheduleApplication.class, args );
+        ConfigurableApplicationContext ctx =
+            SpringApplication.run( TreatmentScheduleApplication.class, args );
 
 //            h2Server.startTcpServer();
 //        } catch (SQLException e) {
