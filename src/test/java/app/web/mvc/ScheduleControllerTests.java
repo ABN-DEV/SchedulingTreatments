@@ -62,13 +62,4 @@ public class ScheduleControllerTests {
             .andExpect( view().name( "schedule" ) );
     }
 
-//    @SuppressWarnings( "javadoc" )
-//    @Test
-//    public void testPatientListPageAddNewPationPost() throws Exception {
-//
-//        mockMvc.perform( post( "/patientList.html" ) )
-//            .andExpect( status().isOk() )
-//            .andExpect( view().name( "patientList" ) );
-//    }
-
 }

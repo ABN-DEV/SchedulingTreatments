@@ -7,24 +7,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * @since 2018.05.20
+ * @author annik
+ */
 @SpringBootApplication
 @ComponentScan( basePackages = {"app.web"} )
 public class TreatmentScheduleApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger( TreatmentScheduleApplication.class );
 
+    /**
+     * Main method.
+     * 
+     * @param args
+     */
     public static void main( String[] args ) {
-
-//        H2DbManager h2Server = new H2DbManager();
-//        try {
-//            h2Server.startTcpServer();
 
         ConfigurableApplicationContext ctx =
             SpringApplication.run( TreatmentScheduleApplication.class, args );
 
-//            h2Server.startTcpServer();
-//        } catch (SQLException e) {
-//            LOG.error( "Starting the Application failed.", e );
-//        }
     }
+
 }

@@ -60,13 +60,4 @@ public class RootControllerTests {
             .andExpect( view().name( "patientList" ) );
     }
 
-//    @SuppressWarnings( "javadoc" )
-//    @Test
-//    public void testIndexPage() throws Exception {
-//
-//        mockMvc.perform( get( "/index.html" ) )
-//            .andExpect( status().isOk() )
-//            .andExpect( view().name( "index" ) );
-//    }
-
 }
