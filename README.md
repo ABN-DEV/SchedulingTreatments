@@ -27,6 +27,8 @@ Hints:
 
 AN IMPLEMENTATION : 
 
+Java 8, SPRING-BOOT, spring-mvc, Thymeleaf, H2 database, JQuery, Bootstrap.
+
 How to run: 
 you have to have installed maven 3.3.9+ version and JAVA 8 version.
 
