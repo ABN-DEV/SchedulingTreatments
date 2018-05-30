@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import app.web.Utils;
 import app.web.form.ScheduleForm;
-import app.web.form.ScheduleForm.Status;
+import app.web.Status;
 import app.web.form.ScheduleStep1Form;
 import app.web.form.StatusForm;
 import app.web.model.Patient;
@@ -241,7 +241,8 @@ public class ScheduleController {
     @PostMapping( value = {"/schedule2"} )
     public String makeAnApointment( final Model model,
             @ModelAttribute( "frmScheduleMain" ) @Valid final ScheduleForm frmSchedule,
-            final BindingResult bindingResult, HttpServletRequest request ) {
+            final BindingResult bindingResult,
+            HttpServletRequest request ) {
 
         // next page 
         String url = "redirect:" + urlSchedule3;
@@ -268,7 +269,7 @@ public class ScheduleController {
 
                     // if STATUS is NULL - create new 
                     if ( frmSchedule.getStatus() == null ) {
-                        frmSchedule.setStatus( ScheduleForm.Status.PLANNED );
+                        frmSchedule.setStatus( Status.PLANNED );
                     }
 
                     model.addAttribute( "selectedPatient", patient );
@@ -304,7 +305,8 @@ public class ScheduleController {
     @PostMapping( value = {"/schedule2.1"} )
     public String changeStatus( final Model model,
             @ModelAttribute( "frmStatus" ) @Valid final StatusForm frmStatus,
-            final BindingResult bindingResult, HttpServletRequest request ) {
+            final BindingResult bindingResult,
+            HttpServletRequest request ) {
 
         // next page 
         String url = "redirect:" + urlSchedule2;
@@ -318,7 +320,7 @@ public class ScheduleController {
             } else {
                 LOG.debug( "Schedule form = {} ", frmStatus );
 
-                ScheduleForm.Status status = ScheduleForm.Status.keyOf( frmStatus.getStatus() );
+                Status status = Status.keyOf( frmStatus.getStatus() );
 
                 Integer key = frmStatus.getStudyId();
 
@@ -342,7 +344,8 @@ public class ScheduleController {
      * Lat page of schedule. Show an apointment.
      */
     @GetMapping( value = {"/schedule3"} )
-    public String scheduleFinished( final Model model, HttpServletRequest request ) {
+    public String scheduleFinished( final Model model,
+            HttpServletRequest request ) {
 
         String url = urlSchedule3;
 
@@ -384,7 +387,7 @@ public class ScheduleController {
 
     private Status[] getAllStatuses() {
 
-        return ScheduleForm.Status.values();
+        return Status.values();
     }
 
     /*

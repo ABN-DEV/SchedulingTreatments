@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.springframework.stereotype.Service;
 
 import app.web.form.ScheduleForm;
-import app.web.form.ScheduleForm.Status;
+import app.web.Status;
 import app.web.model.Study;
 
 /**

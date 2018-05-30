@@ -9,7 +9,7 @@
 package app.web.form;
 
 /**
- * MVC Web Form for changing Status an Appointment.
+ * MVC Web Form for changing Status an Appointment. It receives and stores web form data.
  * 
  * @since 2018.05.20
  * @author annik

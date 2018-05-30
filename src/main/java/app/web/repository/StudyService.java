@@ -12,14 +12,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import app.web.Status;
 import app.web.form.ScheduleForm;
-import app.web.form.ScheduleForm.Status;
 import app.web.form.ScheduleFormConverter;
 import app.web.model.Study;
 

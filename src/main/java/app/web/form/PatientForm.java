@@ -32,15 +32,16 @@ public class PatientForm {
     @Size( min = 2, max = 128 )
     private String fullName;
 
+    // optional
     private String gender;
 
+    // optional
     @DateTimeFormat( pattern = "MM/dd/yyyy" )
     @Past
     private LocalDate birthday;
 
     /**
      * Default Contructor.
-     *
      */
     public PatientForm() {
 

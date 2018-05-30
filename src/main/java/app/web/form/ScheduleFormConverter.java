@@ -50,7 +50,7 @@ public class ScheduleFormConverter {
     }
 
     /**
-     * Converter {@link ScheduleForm} into {@link Study}.
+     * Converter {@link ScheduleForm} into {@link Study} and you can use data with DAO.
      * 
      * @return
      */

@@ -9,22 +9,17 @@
 package app.web.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import app.web.form.ScheduleForm;
+import app.web.Status;
 
 /**
  * Domain object a Doctor.
@@ -45,7 +40,7 @@ public class Study implements Serializable {
     private String Description;
 
     @Column( length = 1, nullable = false )
-    private ScheduleForm.Status Status;
+    private Status Status;
 
     @Column( nullable = false )
     private LocalDateTime startTime;
@@ -85,12 +80,12 @@ public class Study implements Serializable {
         Description = description;
     }
 
-    public ScheduleForm.Status getStatus() {
+    public Status getStatus() {
 
         return Status;
     }
 
-    public void setStatus( ScheduleForm.Status status ) {
+    public void setStatus( Status status ) {
 
         Status = status;
     }

@@ -21,7 +21,8 @@ import app.web.model.Patient;
 
 /**
  * Spring MVC Web form data for Scheduling procedures. <BR />
- * At Step1 of Scheduling we choose a {@link Patient} and planed date for treatment.
+ * At Step1 of Scheduling we choose a {@link Patient} and planed date for treatment. <BR />
+ * This Object receives and stores HTML form data.
  * 
  * @since 2018.05.17
  * @author annik

@@ -19,10 +19,11 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import app.web.Status;
 import app.web.model.Patient;
 
 /**
- * Spring MVC Web form data for Scheduling procedures.
+ * Spring MVC Web form data for Scheduling procedures. It receives and stores one of the HTML form data.
  * 
  * @since 2018.05.17
  * @author annik
@@ -59,55 +60,6 @@ public class ScheduleForm implements Serializable {
     private LocalDateTime estimatedEndTime;
 
     private Patient patient;
-
-    /**
-     * Status of Scheduling procedure.
-     * 
-     * @since 2018.05.17
-     * @author annik
-     */
-    public static enum Status {
-
-        PLANNED( "p", "Planned" ), // 
-        IN_PROGRESS( "i", "In progress" ), // 
-        FINISHED( "f", "Finished" ) //
-        ;
-
-        private String key;
-
-        private String label;
-
-        private Status( String key, String label ) {
-
-            this.key = key;
-            this.label = label;
-        }
-
-        public String getValue() {
-
-            return this.key;
-        }
-
-        /**
-         * @return plain text this Status.
-         */
-        public String getLabel() {
-
-            return this.label;
-        }
-
-        public static ScheduleForm.Status keyOf( String key ) {
-
-            ScheduleForm.Status result = null;
-            for (ScheduleForm.Status item : ScheduleForm.Status.values()) {
-                if ( key.equals( item.getValue() ) ) {
-                    result = item;
-                }
-            }
-            return result == null ? PLANNED : result;
-        }
-
-    }
 
     public Integer getGid() {
 
